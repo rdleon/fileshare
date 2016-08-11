@@ -27,7 +27,9 @@ func main() {
 	r.HandleFunc("/files", ListFilesHandler).Methods("GET")
 	r.HandleFunc("/files", AddFileHandler).Methods("POST")
 
-	r.HandleFunc("/", ShowPromptHandler).Methods("GET")
+	// Shows a simple prompt for the user/password and file.
+	// Serve static files
+	r.Handle("/", http.FileServer(http.Dir("public"))).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(Addr, r))
 }
@@ -58,8 +60,4 @@ func ListFilesHandler(w http.ResponseWriter, r *http.Request) {
 
 // Uploads a file to the server, returns the status and expire date
 func AddFileHandler(w http.ResponseWriter, r *http.Request) {
-}
-
-// Shows a simple prompt for the user/password and file.
-func ShowPromptHandler(w http.ResponseWriter, r *http.Request) {
 }
