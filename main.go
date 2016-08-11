@@ -8,6 +8,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type User struct {
+	Name     string
+	Password string
+}
+
+var user User
+
+func init() {
+	user = User{Name: "rdleon", Password: "password"}
+}
+
 func main() {
 	var Addr string
 
@@ -29,7 +40,7 @@ func main() {
 
 	// Shows a simple prompt for the user/password and file.
 	// Serve static files
-	r.Handle("/", http.FileServer(http.Dir("public"))).Methods("GET")
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 
 	log.Fatal(http.ListenAndServe(Addr, r))
 }
