@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 )
 
@@ -15,17 +16,21 @@ type User struct {
 	Password string
 }
 
-var user User
+var (
+	user User
+	Conf map[string]string
+)
 
 func init() {
 	user = User{Name: "rdleon", Password: "password"}
+	// TODO: Read config file
+	Conf = map[string]string{
+		"addr":      "127.0.0.1:8080",
+		"secretKey": "secretsecret",
+	}
 }
 
 func main() {
-	var Addr string
-
-	// TODO: Read config file
-	Addr = "127.0.0.1:8080"
 
 	r := mux.NewRouter()
 	// TODO: Check Auth & filter by content-type
@@ -44,7 +49,7 @@ func main() {
 	// Serve static files
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 
-	log.Fatal(http.ListenAndServe(Addr, r))
+	log.Fatal(http.ListenAndServe(Conf["addr"], r))
 }
 
 // Authenticates the user using name:password and generates a JWT
@@ -55,8 +60,15 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if content := r.Header.Get("Content-Type"); content == "application/json" {
+		claims := jwt.StandardClaims{
+			ExpiresAt: 15000,
+			Issuer:    "fileshare",
+		}
+
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, &claims)
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&credentials)
+
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "{\"error\": \"Bad Request\"}")
@@ -65,7 +77,13 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		response = make(map[string]interface{})
 		if credentials == user {
-			response["loggedIn"] = true
+			response["token"], err = token.SignedString([]byte(Conf["secretKey"]))
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				log.Println("Error: ", err)
+				fmt.Fprintf(w, "{\"error\": \"Internal Server Error\"}")
+				return
+			}
 		} else {
 			response["error"] = "Wrong username or password"
 		}

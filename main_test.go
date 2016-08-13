@@ -80,9 +80,7 @@ func TestMalformedJSONLogin(t *testing.T) {
 }
 
 func TestCorrectLogin(t *testing.T) {
-	var expected, response Response
-
-	expected = Response{"loggedIn": true}
+	var response Response
 
 	r, _ := http.NewRequest("POST", "/login", strings.NewReader("{\"Name\": \"rdleon\", \"Password\": \"password\"}"))
 	r.Header.Set("Content-Type", "application/json")
@@ -104,12 +102,8 @@ func TestCorrectLogin(t *testing.T) {
 		t.Error("Can't read the response json")
 	}
 
-	for key, v := range expected {
-		if _, ok := response[key]; !ok {
-			t.Errorf("Expected %s:%v but key is missing in %v", key, v, len(response))
-		} else if response[key] != v {
-			t.Errorf("Expected %s:%v got %v", key, v, response[key])
-		}
+	if _, ok := response["token"]; !ok {
+		t.Errorf("Expected token but it is missing in %v", response)
 	}
 }
 
