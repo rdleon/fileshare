@@ -112,3 +112,14 @@ func TestCorrectLogin(t *testing.T) {
 		}
 	}
 }
+
+func TestLogoutHandler(t *testing.T) {
+	r, _ := http.NewRequest("GET", "/logout", nil)
+	w := httptest.NewRecorder()
+
+	LogoutHandler(w, r)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected status to be '%d' but got '%v'", http.StatusOK, w.Code)
+	}
+}

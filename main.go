@@ -79,6 +79,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 // Logout the user by "destroying" the auth token before it expires
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	// TODO: destroy JWT token, expire session
 }
 
 // Given an string id searches for a file and delivers it to the client
