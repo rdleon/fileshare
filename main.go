@@ -2,6 +2,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -47,6 +49,32 @@ func main() {
 
 // Authenticates the user using name:password and generates a JWT
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	var (
+		credentials User
+		response    map[string]interface{}
+	)
+
+	if content := r.Header.Get("Content-Type"); content == "text/json" {
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&credentials)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "{\"error\": \"Bad Request\"}")
+			return
+		}
+
+		response = make(map[string]interface{})
+		if credentials == user {
+			response["loggedIn"] = true
+		} else {
+			response["error"] = "Wrong username or password"
+		}
+
+		json.NewEncoder(w).Encode(response)
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "{\"error\": \"Must send content as text/json\"}")
+	}
 }
 
 // Logout the user by "destroying" the auth token before it expires
