@@ -52,6 +52,27 @@ func main() {
 	log.Fatal(http.ListenAndServe(Conf["addr"], r))
 }
 
+// Validate the webtoken and return the username
+func ValidateJWT(tokenStr string) (string, bool) {
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
+		}
+
+		return []byte(Conf["secretKey"]), nil
+	})
+
+	if err != nil {
+		return "", false
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims["sub"].(string), true
+	}
+
+	return "", false
+}
+
 // Authenticates the user using name:password and generates a JWT
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var (
