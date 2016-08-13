@@ -14,7 +14,7 @@ type Response map[string]interface{}
 func TestInvalidHeaderLogin(t *testing.T) {
 	var expected, response Response
 
-	expected = Response{"error": "Must send content as text/json"}
+	expected = Response{"error": "Must send content as application/json"}
 
 	r, _ := http.NewRequest("POST", "/login", strings.NewReader("TeST"))
 	w := httptest.NewRecorder()
@@ -51,7 +51,7 @@ func TestMalformedJSONLogin(t *testing.T) {
 	expected = Response{"error": "Bad Request"}
 
 	r, _ := http.NewRequest("POST", "/login", strings.NewReader("TeST"))
-	r.Header.Set("Content-Type", "text/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
 	LoginHandler(w, r)
@@ -85,7 +85,7 @@ func TestCorrectLogin(t *testing.T) {
 	expected = Response{"loggedIn": true}
 
 	r, _ := http.NewRequest("POST", "/login", strings.NewReader("{\"Name\": \"rdleon\", \"Password\": \"password\"}"))
-	r.Header.Set("Content-Type", "text/json")
+	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
 	LoginHandler(w, r)

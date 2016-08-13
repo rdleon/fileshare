@@ -54,7 +54,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		response    map[string]interface{}
 	)
 
-	if content := r.Header.Get("Content-Type"); content == "text/json" {
+	if content := r.Header.Get("Content-Type"); content == "application/json" {
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&credentials)
 		if err != nil {
@@ -73,7 +73,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "{\"error\": \"Must send content as text/json\"}")
+		fmt.Fprintf(w, "{\"error\": \"Must send content as application/json\"}")
 	}
 }
 
