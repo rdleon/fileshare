@@ -60,12 +60,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if content := r.Header.Get("Content-Type"); content == "application/json" {
-		claims := jwt.StandardClaims{
-			ExpiresAt: 15000,
-			Issuer:    "fileshare",
-		}
 
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, &claims)
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&credentials)
 
@@ -76,8 +71,17 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		response = make(map[string]interface{})
+
 		if credentials == user {
+			claims := jwt.StandardClaims{
+				ExpiresAt: 15000,
+				Issuer:    "fileshare",
+				Subject:   user.Name,
+			}
+			token := jwt.NewWithClaims(jwt.SigningMethodHS256, &claims)
+
 			response["token"], err = token.SignedString([]byte(Conf["secretKey"]))
+
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				log.Println("Error: ", err)
