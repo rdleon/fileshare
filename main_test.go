@@ -5,17 +5,18 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
 type Response map[string]interface{}
 
-func TestPostLogin(t *testing.T) {
+func TestInvalidHeaderLogin(t *testing.T) {
 	var expected, response Response
 
 	expected = Response{"error": "Must send content as text/json"}
 
-	r, _ := http.NewRequest("POST", "/login", nil)
+	r, _ := http.NewRequest("POST", "/login", strings.NewReader("TeST"))
 	w := httptest.NewRecorder()
 
 	LoginHandler(w, r)
