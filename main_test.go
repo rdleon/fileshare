@@ -11,49 +11,35 @@ import (
 type Response map[string]interface{}
 
 func TestPostLogin(t *testing.T) {
-	var tests = []struct {
-		Body     string
-		Response Response
-		Status   int
-	}{
-		{
-			"uahruhh.r'hrjhauaeua",
-			Response{
-				"error": "Must send content as text/json",
-			},
-			400,
-		},
+	var expected, response Response
+
+	expected = Response{"error": "Must send content as text/json"}
+
+	r, _ := http.NewRequest("POST", "/login", nil)
+	w := httptest.NewRecorder()
+
+	LoginHandler(w, r)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("Expected status %d got %v", http.StatusBadRequest, w.Code)
 	}
 
-	for _, test := range tests {
-		var response Response
-
-		r, _ := http.NewRequest("POST", "/login", nil)
-		w := httptest.NewRecorder()
-
-		LoginHandler(w, r)
-
-		if w.Code != test.Status {
-			t.Errorf("Expected status %d got %v", test.Status, w.Code)
-		}
-
-		b, err := ioutil.ReadAll(w.Body)
-		if err != nil {
-			t.Error("Can't read the response body")
-		}
-
-		err = json.Unmarshal(b, &response)
-		if err != nil {
-			t.Error("Can't read the response json")
-		}
-
-		for key, v := range test.Response {
-			if _, ok := response[key]; !ok {
-				t.Errorf("Expected %s:%v but key is missing in %v", key, v, len(response))
-			} else if response[key] != v {
-				t.Errorf("Expected %s:%v got %v", key, v, response[key])
-			}
-		}
-
+	b, err := ioutil.ReadAll(w.Body)
+	if err != nil {
+		t.Error("Can't read the response body")
 	}
+
+	err = json.Unmarshal(b, &response)
+	if err != nil {
+		t.Error("Can't read the response json")
+	}
+
+	for key, v := range expected {
+		if _, ok := response[key]; !ok {
+			t.Errorf("Expected %s:%v but key is missing in %v", key, v, len(response))
+		} else if response[key] != v {
+			t.Errorf("Expected %s:%v got %v", key, v, response[key])
+		}
+	}
+
 }
