@@ -37,8 +37,15 @@ func TestPostLogin(t *testing.T) {
 			t.Errorf("Expected status %d got %v", test.Status, w.Code)
 		}
 
-		b, _ := ioutil.ReadAll(w.Body)
-		json.Unmarshal(b, &response)
+		b, err := ioutil.ReadAll(w.Body)
+		if err != nil {
+			t.Error("Can't read the response body")
+		}
+
+		err = json.Unmarshal(b, &response)
+		if err != nil {
+			t.Error("Can't read the response json")
+		}
 
 		for key, v := range test.Response {
 			if _, ok := response[key]; !ok {
