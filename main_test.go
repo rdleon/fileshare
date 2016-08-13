@@ -105,6 +105,32 @@ func TestCorrectLogin(t *testing.T) {
 	if _, ok := response["token"]; !ok {
 		t.Errorf("Expected token but it is missing in %v", response)
 	}
+
+	r, _ = http.NewRequest("POST", "/login", strings.NewReader("{\"Name\": \"rdleon\", \"Password\": \"password\"}"))
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Authorization", "Bearer "+response["token"].(string))
+	w = httptest.NewRecorder()
+
+	LoginHandler(w, r)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected status %d got %v", http.StatusOK, w.Code)
+	}
+
+	b, err = ioutil.ReadAll(w.Body)
+	if err != nil {
+		t.Error("Can't read the response body")
+	}
+
+	response = make(Response)
+	err = json.Unmarshal(b, &response)
+	if err != nil {
+		t.Error("Can't read the response json")
+	}
+
+	if _, ok := response["loggedin"]; !ok {
+		t.Errorf("Expected token but it is missing in %v", response)
+	}
 }
 
 func TestLogoutHandler(t *testing.T) {

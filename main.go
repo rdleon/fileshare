@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
@@ -80,6 +82,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		response    map[string]interface{}
 	)
 
+	if tokenStr := r.Header.Get("Authorization"); len(tokenStr) > 0 {
+		i := strings.Index(tokenStr, "Bearer ")
+		if i >= 0 {
+			tokenStr = tokenStr[i+len("Bearer "):]
+		}
+
+		if _, ok := ValidateJWT(tokenStr); ok {
+			fmt.Fprintf(w, "{\"loggedin\": true}")
+			return
+		}
+	}
+
 	if content := r.Header.Get("Content-Type"); content == "application/json" {
 
 		decoder := json.NewDecoder(r.Body)
@@ -95,7 +109,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		if credentials == user {
 			claims := jwt.StandardClaims{
-				ExpiresAt: 15000,
+				ExpiresAt: time.Now().Add(time.Hour * 2).Unix(),
 				Issuer:    "fileshare",
 				Subject:   user.Name,
 			}
