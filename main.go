@@ -19,12 +19,12 @@ type User struct {
 }
 
 var (
-	user User
-	Conf map[string]string
+	MyUser User
+	Conf   map[string]string
 )
 
 func init() {
-	user = User{Name: "rdleon", Password: "password"}
+	MyUser = User{Name: "rdleon", Password: "password"}
 	// TODO: Read config file
 	Conf = map[string]string{
 		"addr":      "127.0.0.1:8080",
@@ -112,11 +112,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		response = make(map[string]interface{})
 
-		if credentials == user {
+		if credentials == MyUser {
 			claims := jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(time.Hour * 2).Unix(),
 				Issuer:    "fileshare",
-				Subject:   user.Name,
+				Subject:   MyUser.Name,
 			}
 			token := jwt.NewWithClaims(jwt.SigningMethodHS256, &claims)
 

@@ -81,8 +81,9 @@ func TestMalformedJSONLogin(t *testing.T) {
 
 func TestCorrectLogin(t *testing.T) {
 	var response Response
+	MyUser = User{Name: "McTest", Password: "ATestPassword"}
 
-	r, _ := http.NewRequest("POST", "/login", strings.NewReader("{\"Name\": \"rdleon\", \"Password\": \"password\"}"))
+	r, _ := http.NewRequest("POST", "/login", strings.NewReader("{\"Name\": \"McTest\", \"Password\": \"ATestPassword\"}"))
 	r.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 
