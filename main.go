@@ -26,12 +26,12 @@ func main() {
 	r.HandleFunc("/login", LoginHandler).Methods("POST")
 	r.HandleFunc("/logout", LogoutHandler).Methods("GET")
 
-	r.HandleFunc("/files/:id", DownloadArchiveHandler).Methods("GET")
-	r.HandleFunc("/files/:id", UpdateArchiveHandler).Methods("PUT")
-	r.HandleFunc("/files/:id", DeleteArchiveHandler).Methods("DELETE")
+	r.HandleFunc("/archives/:id", DownloadArchiveHandler).Methods("GET")
+	r.HandleFunc("/archives/:id", UpdateArchiveHandler).Methods("PUT")
+	r.HandleFunc("/archives/:id", DeleteArchiveHandler).Methods("DELETE")
 
-	r.HandleFunc("/files", ListArchiveHandler).Methods("GET")
-	r.HandleFunc("/files", AddArchiveHandler).Methods("POST")
+	r.HandleFunc("/archives", ListArchiveHandler).Methods("GET")
+	r.HandleFunc("/archives", AddArchiveHandler).Methods("POST")
 
 	// Shows a simple prompt for the user/password and file.
 	// Serve static files
