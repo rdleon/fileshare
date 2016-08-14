@@ -28,9 +28,9 @@ func main() {
 	r.HandleFunc("/login", LoginHandler).Methods("POST")
 	r.HandleFunc("/logout", LogoutHandler).Methods("GET")
 
-	r.HandleFunc("/archives/:id", DownloadArchiveHandler).Methods("GET")
-	r.HandleFunc("/archives/:id", UpdateArchiveHandler).Methods("PUT")
-	r.HandleFunc("/archives/:id", DeleteArchiveHandler).Methods("DELETE")
+	r.HandleFunc("/archives/{archiveKey}", DownloadArchiveHandler).Methods("GET")
+	r.HandleFunc("/archives/{archiveKey}", UpdateArchiveHandler).Methods("PUT")
+	r.HandleFunc("/archives/{archiveKey}", DeleteArchiveHandler).Methods("DELETE")
 
 	r.HandleFunc("/archives", ListArchiveHandler).Methods("GET")
 	r.HandleFunc("/archives", AddArchiveHandler).Methods("POST")
