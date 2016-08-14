@@ -55,7 +55,19 @@ func main() {
 }
 
 // Validate the webtoken and return the username
-func ValidateJWT(tokenStr string) (string, bool) {
+func CheckAuth(r *http.Request) (string, bool) {
+	tokenStr := r.Header.Get("Authorization")
+
+	if tokenStr == "" {
+		return "", false
+	}
+
+	i := strings.Index(tokenStr, "Bearer ")
+
+	if i >= 0 {
+		tokenStr = tokenStr[i+len("Bearer "):]
+	}
+
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method %v", token.Header["alg"])
@@ -82,16 +94,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		response    map[string]interface{}
 	)
 
-	if tokenStr := r.Header.Get("Authorization"); len(tokenStr) > 0 {
-		i := strings.Index(tokenStr, "Bearer ")
-		if i >= 0 {
-			tokenStr = tokenStr[i+len("Bearer "):]
-		}
-
-		if _, ok := ValidateJWT(tokenStr); ok {
-			fmt.Fprintf(w, "{\"loggedin\": true}")
-			return
-		}
+	if _, ok := CheckAuth(r); ok {
+		fmt.Fprintf(w, "{\"loggedin\": true}")
+		return
 	}
 
 	if content := r.Header.Get("Content-Type"); content == "application/json" {
