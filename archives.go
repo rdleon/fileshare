@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -43,6 +44,16 @@ func ListArchiveHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "{\"error\": \"Unauthorized\"}")
 		return
 	}
+
+	resp := map[string][]Archive{
+		"archives": make([]Archive, 0),
+	}
+
+	for _, archive := range ArchiveStore {
+		resp["archives"] = append(resp["archives"], archive)
+	}
+
+	json.NewEncoder(w).Encode(resp)
 }
 
 // Uploads a file to the server, returns the status and expire date

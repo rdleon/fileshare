@@ -16,6 +16,8 @@ func init() {
 		"addr":      "127.0.0.1:8080",
 		"secretKey": "secretsecret",
 	}
+
+	ArchiveStore = make(map[string]Archive)
 }
 
 func main() {
