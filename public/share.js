@@ -11,7 +11,7 @@ var http = {
             if (xhr.readyState > 3 && xhr.status == 200) {
                 success(xhr.responseText);
             } else if (xhr.status >= 400) {
-                failure(xhr.status)
+                failure(xhr.status, xhr.responseText)
             }
         };
 
