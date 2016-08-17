@@ -71,5 +71,27 @@ var http = {
     }
 };
 
-window.onload = function () {
-};
+function drawMainInput() {
+    var div = document.createElement('div'),
+        input = document.createElement('input');
+
+    input.id = 'main';
+    input.type = 'password';
+
+    input.addEventListener('keypress', function (e) {
+        var key = window.event ? e.keyCode : e.which;
+        if (key == 13) {
+            http.get('/archive/' + input.value);
+        }
+    });
+
+    div.appendChild(input);
+
+    document.body.innerHTML = '';
+    document.body.appendChild(div);
+}
+
+function drawAdmin() {
+}
+
+document.addEventListener('DOMContentLoaded', drawMainInput);
