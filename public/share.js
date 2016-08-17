@@ -8,7 +8,7 @@ var http = {
         xhr.open(method, url, true)
 
         xhr.onreadystatechange = function () {
-            if (xhr.readyState > 3 && xhr.status = 200) {
+            if (xhr.readyState > 3 && xhr.status == 200) {
                 success(xhr.responseText);
             } else if (xhr.status >= 400) {
                 failure(xhr.status)
