@@ -1,3 +1,8 @@
+function isFunction(functionToCheck) {
+    var getType = {};
+    return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
+}
+
 var http = {
     jwt: null,
     request: function (method, url, data, success, failure) {
@@ -8,9 +13,9 @@ var http = {
         xhr.open(method, url, true)
 
         xhr.onreadystatechange = function () {
-            if (xhr.readyState > 3 && xhr.status == 200) {
+            if (isFunction(success) && xhr.readyState > 3 && xhr.status == 200) {
                 success(xhr.responseText);
-            } else if (xhr.status >= 400) {
+            } else if (isFunction(failure) && xhr.status >= 400) {
                 failure(xhr.status, xhr.responseText)
             }
         };
@@ -33,16 +38,20 @@ var http = {
         return xhr;
     },
     get: function (url, success, failure) {
-        return request('GET', url, null, success, failure)
+        var self = this;
+        return self.request('GET', url, null, success, failure)
     },
     post: function (url, data, success, failure) {
-        return request('POST', url, data, success, failure)
+        var self = this;
+        return self.request('POST', url, data, success, failure)
     },
     put: function (url, data, success, failure) {
-        return request('POST', url, data, success, failure)
+        var self = this;
+        return self.request('POST', url, data, success, failure)
     },
     'delete': function (url, success, failure) {
-        return request('DELETE', url, null, success, failure)
+        var self = this;
+        return self.request('DELETE', url, null, success, failure)
     },
     uploadFile: function (url, file, success) {
         var self = this;
