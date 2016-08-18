@@ -87,6 +87,7 @@ func ListArchiveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, archive := range ArchiveStore {
+		// Do not send the server path
 		resp["archives"] = append(resp["archives"], archive)
 	}
 
@@ -133,16 +134,19 @@ func AddArchiveHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		keyStr := key.String()
+		expire := time.Now().Add(time.Hour * 24).Unix()
 
 		ArchiveStore[keyStr] = Archive{
 			Key:      keyStr,
 			SavePath: path,
 			Name:     handler.Filename,
-			Expire:   time.Now().Add(time.Hour * 24).Unix(),
+			Expire:   expire,
 		}
 
 		resp := map[string]string{
-			"key": keyStr,
+			"name":   handler.Filename,
+			"key":    keyStr,
+			"expire": expire,
 		}
 
 		w.WriteHeader(http.StatusCreated)

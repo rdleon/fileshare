@@ -114,7 +114,7 @@ function drawMainInput() {
 function drawAdmin() {
     var div = document.createElement('div');
     var list = document.createElement('ul');
-    var archives = [];
+    var fileInput;
 
     div.id = 'maincenter';
     div.class = 'admin';
@@ -122,17 +122,31 @@ function drawAdmin() {
     div.innerHTML = '<h2>File share</h2><h3>Admin menu</h3>';
     div.innerHTML += '<div><h4>Upload archive:</h4><input type="file"></div>';
 
+    fileInput = div.getElementsByTagName('input')[0];
+
+    fileInput.addEventListener('change', function (e) {
+        var files = fileInput.files;
+
+        for (var i= 0; i < files.length; i++) {
+            http.uploadFile('/archives', files[i], function (ret) {
+                // TODO: Add to list
+                console.log('Uploaded: ', ret);
+            });
+        }
+    });
+
     http.get('/archives', function (r) {
-        var li;
+        var li, i;
         resp = JSON.parse(r);
 
         if (!resp.archives || resp.archives.length == 0) {
+            // No archives to show
             return;
         }
 
-        for (archive in archives) {
+        for (i in resp.archives) {
             li = document.createElement('li');
-            li.innerHTML = '<span>' + archive.Name + '</span>';
+            li.innerHTML = '<span>' + resp.archives[i].Name + '</span>';
             list.appendChild(li);
         }
         div.appendChild(list);
