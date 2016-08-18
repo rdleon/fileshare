@@ -113,11 +113,30 @@ function drawMainInput() {
 
 function drawAdmin() {
     var div = document.createElement('div');
+    var list = document.createElement('ul');
+    var archives = [];
 
     div.id = 'maincenter';
     div.class = 'admin';
 
     div.innerHTML = '<h2>File share</h2><h3>Admin menu</h3>';
+    div.innerHTML += '<div><h4>Upload archive:</h4><input type="file"></div>';
+
+    http.get('/archives', function (r) {
+        var li;
+        resp = JSON.parse(r);
+
+        if (!resp.archives || resp.archives.length == 0) {
+            return;
+        }
+
+        for (archive in archives) {
+            li = document.createElement('li');
+            li.innerHTML = '<span>' + archive.Name + '</span>';
+            list.appendChild(li);
+        }
+        div.appendChild(list);
+    });
 
     document.body.innerHTML = '';
     document.body.appendChild(div);
