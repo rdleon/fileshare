@@ -29,7 +29,6 @@ var http = {
         if ((method == 'PUT' || method == 'POST') && data) {
             jsonStr = JSON.stringify(data)
             xhr.setRequestHeader('Content-Type', 'application/json')
-            xhr.setRequestHeader('Content-length', jsonStr.length)
             xhr.send(jsonStr);
         } else {
             xhr.send();
@@ -71,17 +70,38 @@ var http = {
     }
 };
 
+
+function onLogin(res) {
+    // Set the JWT
+    auth = JSON.parse(res);
+    if (auth.token) {
+        http.jwt = auth.token;
+        drawAdmin();
+    }
+}
+
 function drawMainInput() {
     var div = document.createElement('div'),
         input = document.createElement('input');
+
+    div.id = 'maincenter';
+    div.class = 'simpleForm';
 
     input.id = 'main';
     input.type = 'password';
 
     input.addEventListener('keypress', function (e) {
         var key = window.event ? e.keyCode : e.which;
+        var colon = input.value.indexOf(':')
+        var creds = [];
+
         if (key == 13) {
-            http.get('/archive/' + input.value);
+            if (colon < 0) {
+                http.get('/archive/' + input.value);
+            } else {
+                creds = input.value.split(':', 2)
+                http.post('/login', {'name': creds[0], 'password': creds[1]}, onLogin);
+            }
         }
     });
 
@@ -92,6 +112,15 @@ function drawMainInput() {
 }
 
 function drawAdmin() {
+    var div = document.createElement('div');
+
+    div.id = 'maincenter';
+    div.class = 'admin';
+
+    div.innerHTML = '<h2>File share</h2><h3>Admin menu</h3>';
+
+    document.body.innerHTML = '';
+    document.body.appendChild(div);
 }
 
 document.addEventListener('DOMContentLoaded', drawMainInput);
