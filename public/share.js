@@ -4,9 +4,8 @@ function drawMainInput() {
 
     function onLogin(res) {
         // Set the JWT
-        auth = JSON.parse(res);
-        if (auth.token) {
-            http.setJWT(auth.token);
+        if (res.token) {
+            http.setJWT(res.token);
             drawAdmin();
         }
     }
@@ -62,9 +61,8 @@ function drawAdmin() {
         }
     });
 
-    http.get('/archives', function (r) {
+    http.get('/archives', function (resp) {
         var li, i;
-        resp = JSON.parse(r);
 
         if (!resp.archives || resp.archives.length == 0) {
             // No archives to show
