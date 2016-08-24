@@ -30,13 +30,18 @@ HTTP.prototype.request = function (method, url, body, success, failure) {
             if (isFunction(success) && xhr.readyState > 3 && xhr.status == 200) {
                 if (xhr.responseText) {
                     resp = JSON.parse(xhr.responseText);
+                    success(resp);
+                } else {
+                    success({});
                 }
-                success(xhr.responseText);
+
             } else if (isFunction(failure) && xhr.status >= 400) {
                 if (xhr.responseText) {
                     resp = JSON.parse(xhr.responseText);
+                    failure(xhr.status, resp);
+                } else {
+                    failure(xhr.status, {});
                 }
-                failure(xhr.status, xhr.responseText);
             }
         };
 
