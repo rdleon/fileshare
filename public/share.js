@@ -9,12 +9,16 @@ function drawMainInput() {
             drawAdmin();
         }
     }
+	
+	var keyImage = String.fromCharCode(0x2325)  //
 
     div.id = 'maincenter';
     div.class = 'simpleForm';
 
     input.id = 'main';
     input.type = 'password';
+
+	input.placeholder = keyImage;	//
 
     input.addEventListener('keypress', function (e) {
         var key = window.event ? e.keyCode : e.which;

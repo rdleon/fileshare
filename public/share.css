@@ -1,0 +1,37 @@
+
+body {
+		
+	background:	#DEDEDE;
+		
+}
+
+#maincenter {
+	
+	width: 40%;	
+	height: 20%;
+	margin: 20% auto 0 auto;	
+	text-align: center;
+	min-width: 150px;
+	max-width: 250px;
+	border: 1px solid rgba(0,0,0,0.2);
+	background: #F3F3F3;
+	padding: 30px 75px 30px 75px ;
+
+	
+}
+
+#main {
+
+	width: 100%;
+	padding; 10px;
+	background: #FFFFFF;
+	font-size: 30px;
+	border: 1px solid rgba(0,0,255, 0.3);
+	outline: none;
+}
+
+#main:focus {
+
+	border: 1px solid rgba(0,0,255, 0.6);
+}
+
