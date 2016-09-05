@@ -2,8 +2,10 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -21,6 +23,7 @@ func init() {
 }
 
 func main() {
+	readConf()
 
 	r := mux.NewRouter()
 	// TODO: Check Auth & filter by content-type
@@ -40,4 +43,29 @@ func main() {
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 
 	log.Fatal(http.ListenAndServe(Conf["addr"], r))
+}
+
+func readConf() {
+	var fileConf map[string]string
+
+	fh, err := os.Open("/etc/fileshare.json")
+	if err != nil {
+		log.Println("Couldn't open the config file")
+		return
+	}
+
+	defer fh.Close()
+
+	dec := json.NewDecoder(fh)
+	err = dec.Decode(&fileConf)
+	if err != nil {
+		log.Println("Error reading the config file")
+		return
+	}
+
+	for k := range Conf {
+		if _, ok := fileConf[k]; ok {
+			Conf[k] = fileConf[k]
+		}
+	}
 }
