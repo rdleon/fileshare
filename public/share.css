@@ -35,3 +35,14 @@ body {
 	border: 1px solid rgba(0,0,255, 0.6);
 }
 
+.maincenteradmin {
+	width: 60%;
+	height: 50%;
+	padding: 10%;
+	margin: 100px;
+	background: #f99;	
+}
+
+li:nth-child(odd) {
+	background: #CCE;
+}

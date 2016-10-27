@@ -44,9 +44,13 @@ function drawMainInput() {
 function drawAdmin() {
     var div = document.createElement('div');
     var list = document.createElement('ul');
+	
+
+	//var parrafo = document.createElement('p');   //debug
+
     var fileInput;
 
-    div.id = 'maincenter';
+    div.id = 'maincenteradmin';
     div.class = 'admin';
 
     div.innerHTML = '<h2>File share</h2><h3>Admin menu</h3>';
@@ -66,7 +70,7 @@ function drawAdmin() {
     });
 
     http.get('/archives', function (resp) {
-        var li, i;
+        var li, i, deleteButton;	//
 
         if (!resp.archives || resp.archives.length == 0) {
             // No archives to show
@@ -75,15 +79,31 @@ function drawAdmin() {
 
         for (i in resp.archives) {
             li = document.createElement('li');
+			deleteButton =  document.createElement('input');	//
+
+			deleteButton.type = 'button';	//
+			deleteButton.value = String.fromCharCode(0x2602);	//
+
             li.innerHTML = '<span>' + resp.archives[i].Name + '</span>';
+
+			deleteButton.addEventListener("click", function(ev){
+				http.delete(resp.archives[i].Name);
+			});
+			
+			li.appendChild(deleteButton);	//
             list.appendChild(li);
         }
         div.appendChild(list);
     });
-
+	
+	//parrafo.innerHTML = 'Esto es un parrafo';   //debug
+	
     document.body.innerHTML = '';
     document.body.appendChild(div);
+
+	//document.body.appendChild(parrafo)  		//debug
 }
 
 var http = new HTTP();
 document.addEventListener('DOMContentLoaded', drawMainInput);
+

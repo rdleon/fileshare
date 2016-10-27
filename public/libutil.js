@@ -83,7 +83,7 @@ HTTP.prototype.put = function(url, body, success, failure) {
     return this.request('PUT', url, body, success, failure);
 };
 
-HTTP.prototype.delete = function(url) {
+HTTP.prototype.delete = function(url, success, failure) {
     return this.request('DELETE', url, null, success, failure);
 };
 
