@@ -85,9 +85,13 @@ function drawAdmin() {
 			deleteButton.value = String.fromCharCode(0x2602);	//
 
             li.innerHTML = '<span>' + resp.archives[i].Name + '</span>';
-
+			
+			key = resp.archives[i].Key;
+			key2 = key.replace('-','');
+			
 			deleteButton.addEventListener("click", function(ev){
-				http.delete(resp.archives[i].Name);
+
+				http.delete('/archives/' + key);
 			});
 			
 			li.appendChild(deleteButton);	//
