@@ -8,7 +8,7 @@ function isFunction(func) {
 function HTTP() {
     var self = this;
 
-    self.jwt = null;
+    self.jwt = localStorage.getItem('webtoken');
 };
 
 HTTP.prototype.request = function (method, url, body, success, failure) {
@@ -65,10 +65,20 @@ HTTP.prototype.request = function (method, url, body, success, failure) {
 
 HTTP.prototype.setJWT = function (jwt) {
     this.jwt = jwt;
+    localStorage.setItem('webtoken', jwt);
+};
+
+HTTP.prototype.getJWT = function (jwt) {
+    if (!this.jwt) {
+        this.jwt = localStorage.getItem('webtoken');
+    }
+
+    return this.jwt;
 };
 
 HTTP.prototype.clearJWT = function () {
     this.jwt = null;
+    localStorage.removeItem('webtoken');
 };
 
 HTTP.prototype.get = function(url, success, failure) {

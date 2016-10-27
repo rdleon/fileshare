@@ -9,7 +9,12 @@ function drawMainInput() {
             drawAdmin();
         }
     }
-	
+
+    if (http.getJWT()) {
+        drawAdmin();
+        return;
+    }
+
 	var keyImage = String.fromCharCode(0x2325)  //
 
     div.id = 'maincenter';
