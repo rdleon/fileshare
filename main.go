@@ -13,7 +13,6 @@ import (
 var Conf map[string]string
 
 func init() {
-	// TODO: Read config file
 	Conf = map[string]string{
 		"addr":      "127.0.0.1:8080",
 		"secretKey": "secretsecret",

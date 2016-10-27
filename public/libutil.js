@@ -9,6 +9,8 @@ function HTTP() {
     var self = this;
 
     self.jwt = localStorage.getItem('webtoken');
+
+    self.checkToken();
 };
 
 HTTP.prototype.request = function (method, url, body, success, failure) {
@@ -71,6 +73,7 @@ HTTP.prototype.setJWT = function (jwt) {
 HTTP.prototype.getJWT = function (jwt) {
     if (!this.jwt) {
         this.jwt = localStorage.getItem('webtoken');
+        this.checkToken();
     }
 
     return this.jwt;
@@ -136,4 +139,28 @@ HTTP.prototype.uploadFile = function(url, file, success, failure) {
         }
 
         xhr.send(formData);
+};
+
+HTTP.prototype.checkToken = function() {
+    var valid = true,
+        token = [],
+        user = {},
+        now = new Date();
+
+    if (this.jwt) {
+        token = this.jwt.split('.');
+        if (token.length > 1) {
+            user = JSON.parse(atob(token[1]));
+            if (!user.exp || user.exp > now.getTime()) {
+                valid = false;
+                this.jwt = null;
+            }
+        } else {
+            valid = false;
+        }
+    } else {
+        valid = false;
+    }
+
+    return valid;
 };
