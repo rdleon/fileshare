@@ -114,8 +114,8 @@ func AddArchiveHandler(w http.ResponseWriter, r *http.Request) {
 
 	if handler != nil {
 		r.ParseMultipartForm(32 << 20)
-		// TODO: Read the save directory from Conf
-		path := "/tmp/" + handler.Filename
+		// Read the save directory from Conf
+		path := Conf["saveDir"] + "/" + handler.Filename
 		f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
