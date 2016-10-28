@@ -35,3 +35,37 @@ body {
 	border: 1px solid rgba(0,0,255, 0.6);
 }
 
+.admin {
+	text-align: center;
+}
+
+#maincenteradmin {
+	padding: 20px;
+	margin: 50px 20% 50px 20%;
+	background: #F3F3F3;	
+}
+
+li:nth-child(odd) {
+	background: #E9e9F9;
+}
+
+li:nth-child(even) {
+	background: #F5F5EC;
+}
+
+li {
+	padding: 7px;		
+}
+
+li > input {
+	display: inline-block;
+	float: right;
+}
+
+li > input:hover { 
+    cursor: pointer;
+}
+
+input[type="file"]:hover {
+	cursor: pointer;	
+}
