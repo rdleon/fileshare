@@ -29,7 +29,7 @@ HTTP.prototype.request = function (method, url, body, success, failure) {
         xhr.onreadystatechange = function () {
             var resp = null;
 
-            if (isFunction(success) && xhr.readyState > 3 && xhr.status == 200) {
+            if (isFunction(success) && xhr.readyState > 3 && xhr.status >= 200 && xhr.status < 400) {
                 if (xhr.responseText) {
                     resp = JSON.parse(xhr.responseText);
                     success(resp);
@@ -118,7 +118,7 @@ HTTP.prototype.uploadFile = function(url, file, success, failure) {
         xhr.onreadystatechange = function () {
             var resp = null;
 
-            if (isFunction(success) && xhr.readyState > 3 && xhr.status == 200) {
+            if (isFunction(success) && xhr.readyState > 3 && xhr.status >= 200 && xhr.status < 400) {
                 if (xhr.responseText) {
                     resp = JSON.parse(xhr.responseText);
                 }
