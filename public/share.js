@@ -49,10 +49,6 @@ function drawMainInput() {
 function drawAdmin() {
     var div = document.createElement('div');
     var list = document.createElement('ul');
-	
-
-	//var parrafo = document.createElement('p');   //debug
-
     var fileInput;
 
     div.id = 'maincenteradmin';
@@ -84,40 +80,31 @@ function drawAdmin() {
 
         for (i in resp.archives) {
             li = document.createElement('li');
-			deleteButton =  document.createElement('input');	//
+			deleteButton =  document.createElement('input'); //
 
-			deleteButton.type = 'button';	//
-			deleteButton.value = String.fromCharCode(0x2602);	//
+			deleteButton.type = 'button'; //
+			deleteButton.value = String.fromCharCode(0x2602); //
 
             li.innerHTML = '<span>' + resp.archives[i].Name + '</span>';
-			
 			key = resp.archives[i].Key;
-			key2 = key.replace('-','');
-			
-			deleteButton.addEventListener("click", function(ev){
 
-				nodeSelected = ev.target
-				console.log(nodeSelected)
-				parentNodeSelected = nodeSelected.parentNode;
-				grandParentNodeSelected = parentNodeSelected.parentNode;
-				console.log(grandParentNodeSelected.tagName)
-				//while (parentNodeSelected.firstChild) grandParentNodeSelected.insertBefore(parentNodeSelected.firstChild, parentNodeSelected);
-				grandParentNodeSelected.removeChild(parentNodeSelected);
+			deleteButton.addEventListener("click", function (event) {
+                // Remove succeded on server
+
+				var li = event.target.parentNode.parentNode;
+				li.parentNode.removeChild(li);
 				http.delete('/archives/' + key);
 			});
-			
-			li.appendChild(deleteButton);	//
+
+			li.appendChild(deleteButton); //
             list.appendChild(li);
         }
+
         div.appendChild(list);
     });
-	
-	//parrafo.innerHTML = 'Esto es un parrafo';   //debug
-	
+
     document.body.innerHTML = '';
     document.body.appendChild(div);
-
-	//document.body.appendChild(parrafo)  		//debug
 }
 
 var http = new HTTP();
