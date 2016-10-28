@@ -46,7 +46,7 @@ body {
 }
 
 li:nth-child(odd) {
-	background: #E9e9F9;
+	background: #dcdcFF;
 }
 
 li:nth-child(even) {

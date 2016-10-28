@@ -96,6 +96,13 @@ function drawAdmin() {
 			
 			deleteButton.addEventListener("click", function(ev){
 
+				nodeSelected = ev.target
+				console.log(nodeSelected)
+				parentNodeSelected = nodeSelected.parentNode;
+				grandParentNodeSelected = parentNodeSelected.parentNode;
+				console.log(grandParentNodeSelected.tagName)
+				//while (parentNodeSelected.firstChild) grandParentNodeSelected.insertBefore(parentNodeSelected.firstChild, parentNodeSelected);
+				grandParentNodeSelected.removeChild(parentNodeSelected);
 				http.delete('/archives/' + key);
 			});
 			
