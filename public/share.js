@@ -56,7 +56,7 @@ function makeItem(archive) {
     item.innerHTML = '<span>' + archive.Name + '</archive>';
 
     deleteButton.addEventListener('click', function (event) {
-        // Remove succeded on server
+        // Remove if deleted succeeded on server
         var li = event.target.parentNode;
         http.delete('/archives/' + archive.Key, function () {
             li.parentNode.removeChild(li);
@@ -113,4 +113,3 @@ function drawAdmin() {
 
 var http = new HTTP();
 document.addEventListener('DOMContentLoaded', drawMainInput);
-
