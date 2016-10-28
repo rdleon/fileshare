@@ -53,7 +53,7 @@ function makeItem(archive) {
     deleteButton.type = 'button';
     deleteButton.value = 'DELETE';
 
-    item.innerHTML = '<span>' + archive.Name + '</archive>';
+    item.innerHTML = '<span>' + archive.Name + '</span>';
 
     deleteButton.addEventListener('click', function (event) {
         // Remove if deleted succeeded on server
