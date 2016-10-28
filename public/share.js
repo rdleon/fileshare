@@ -46,6 +46,27 @@ function drawMainInput() {
     document.body.appendChild(div);
 }
 
+function makeItem(archive) {
+    var item = document.createElement('li'),
+        deleteButton =  document.createElement('input');
+
+    deleteButton.type = 'button';
+    deleteButton.value = 'DELETE';
+
+    item.innerHTML = '<span>' + archive.Name + '</archive>';
+
+    deleteButton.addEventListener('click', function (event) {
+        // Remove succeded on server
+        var li = event.target.parentNode;
+        http.delete('/archives/' + archive.Key, function () {
+            li.parentNode.removeChild(li);
+        });
+    });
+
+    item.appendChild(deleteButton); //
+    return item;
+}
+
 function drawAdmin() {
     var div = document.createElement('div');
     var list = document.createElement('ul');
@@ -63,15 +84,15 @@ function drawAdmin() {
         var files = fileInput.files;
 
         for (var i= 0; i < files.length; i++) {
-            http.uploadFile('/archives', files[i], function (ret) {
-                // TODO: Add to list
-                console.log('Uploaded: ', ret);
+            http.uploadFile('/archives', files[i], function (newArchive) {
+                li = makeItem(newArchive)
+                list.appendChild(li);
             });
         }
     });
 
     http.get('/archives', function (resp) {
-        var li, i, deleteButton;	//
+        var li, i, deleteButton;
 
         if (!resp.archives || resp.archives.length == 0) {
             // No archives to show
@@ -79,29 +100,12 @@ function drawAdmin() {
         }
 
         for (i in resp.archives) {
-            li = document.createElement('li');
-			deleteButton =  document.createElement('input'); //
-
-			deleteButton.type = 'button'; //
-			deleteButton.value = String.fromCharCode(0x2602); //
-
-            li.innerHTML = '<span>' + resp.archives[i].Name + '</span>';
-			key = resp.archives[i].Key;
-
-			deleteButton.addEventListener("click", function (event) {
-                // Remove succeded on server
-
-				var li = event.target.parentNode.parentNode;
-				li.parentNode.removeChild(li);
-				http.delete('/archives/' + key);
-			});
-
-			li.appendChild(deleteButton); //
+            li = makeItem(resp.archives[i])
             list.appendChild(li);
         }
-
-        div.appendChild(list);
     });
+
+    div.appendChild(list);
 
     document.body.innerHTML = '';
     document.body.appendChild(div);

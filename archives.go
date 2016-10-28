@@ -144,9 +144,9 @@ func AddArchiveHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		resp := map[string]interface{}{
-			"name":   handler.Filename,
-			"key":    keyStr,
-			"expire": expire,
+			"Name":   handler.Filename,
+			"Key":    keyStr,
+			"Expire": expire,
 		}
 
 		w.WriteHeader(http.StatusCreated)
