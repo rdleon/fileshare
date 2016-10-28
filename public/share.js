@@ -1,6 +1,7 @@
 function drawMainInput() {
     var div = document.createElement('div'),
-        input = document.createElement('input');
+        input = document.createElement('input'),
+        keyImage = String.fromCharCode(0x2325);
 
     function onLogin(res) {
         // Set the JWT
@@ -15,20 +16,18 @@ function drawMainInput() {
         return;
     }
 
-	var keyImage = String.fromCharCode(0x2325)  //
-
     div.id = 'maincenter';
     div.class = 'simpleForm';
 
     input.id = 'main';
     input.type = 'password';
 
-	input.placeholder = keyImage;	//
+	input.placeholder = keyImage;
 
     input.addEventListener('keypress', function (e) {
-        var key = window.event ? e.keyCode : e.which;
-        var colon = input.value.indexOf(':')
-        var creds = [];
+        var key = window.event ? e.keyCode : e.which,
+            colon = input.value.indexOf(':'),
+            creds = [];
 
         if (key == 13) {
             if (colon < 0) {
@@ -63,14 +62,14 @@ function makeItem(archive) {
         });
     });
 
-    item.appendChild(deleteButton); //
+    item.appendChild(deleteButton);
     return item;
 }
 
 function drawAdmin() {
-    var div = document.createElement('div');
-    var list = document.createElement('ul');
-    var fileInput;
+    var div = document.createElement('div'),
+        list = document.createElement('ul'),
+        fileInput;
 
     div.id = 'maincenteradmin';
     div.class = 'admin';
@@ -81,9 +80,9 @@ function drawAdmin() {
     fileInput = div.getElementsByTagName('input')[0];
 
     fileInput.addEventListener('change', function (e) {
-        var files = fileInput.files;
+        var i, files = fileInput.files;
 
-        for (var i= 0; i < files.length; i++) {
+        for (i = 0; i < files.length; i++) {
             http.uploadFile('/archives', files[i], function (newArchive) {
                 li = makeItem(newArchive)
                 list.appendChild(li);
