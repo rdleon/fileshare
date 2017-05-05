@@ -47,12 +47,17 @@ function drawMainInput() {
 
 function makeItem(archive) {
     var item = document.createElement('li'),
-        deleteButton =  document.createElement('input');
+        deleteButton = document.createElement('input'),
+        expiration = new Date(archive.Expire * 1000);
 
     deleteButton.type = 'button';
     deleteButton.value = 'DELETE';
 
-    item.innerHTML = '<span>' + archive.Name + '</span>';
+    item.innerHTML = '<span>';
+    item.innerHTML += '<span>';
+    item.innerHTML += '<a href="/archives/'+ archive.Key +'">' + archive.Name + '</a>'
+    item.innerHTML += '<span> Expires: '+ expiration.toISOString() +'</span>';
+    item.innerHTML += '</span>';
 
     deleteButton.addEventListener('click', function (event) {
         // Remove if deleted succeeded on server
@@ -63,6 +68,7 @@ function makeItem(archive) {
     });
 
     item.appendChild(deleteButton);
+
     return item;
 }
 
