@@ -3,6 +3,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -48,12 +49,14 @@ func main() {
 func readConf() {
 	var fileConf map[string]string
 
-	fh, err := os.Open("/etc/fileshare.json")
+	var conf = flag.String("conf", "/etc/fileshare.json", "The configuration file")
+	flag.Parse()
+
+	fh, err := os.Open(*conf)
 	if err != nil {
 		log.Println("Couldn't open the config file")
 		return
 	}
-
 	defer fh.Close()
 
 	dec := json.NewDecoder(fh)
