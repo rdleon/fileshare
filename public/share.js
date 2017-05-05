@@ -50,20 +50,19 @@ function makeItem(archive) {
         deleteButton = document.createElement('input'),
         expiration = new Date(archive.Expire * 1000);
 
-    deleteButton.type = 'button';
-    deleteButton.value = 'DELETE';
-
     item.innerHTML = '<span>';
     item.innerHTML += '<span>';
     item.innerHTML += '<a href="/archives/'+ archive.Key +'">' + archive.Name + '</a>'
     item.innerHTML += '<span> Expires: '+ expiration.toISOString() +'</span>';
     item.innerHTML += '</span>';
 
+    deleteButton.type = 'button';
+    deleteButton.value = 'DELETE';
+
     deleteButton.addEventListener('click', function (event) {
         // Remove if deleted succeeded on server
-        var li = event.target.parentNode;
         http.delete('/archives/' + archive.Key, function () {
-            li.parentNode.removeChild(li);
+            item.parentNode.removeChild(item);
         });
     });
 
