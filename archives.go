@@ -81,6 +81,7 @@ func DeleteArchiveHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	if key, ok := vars["archiveKey"]; ok {
 		delete(ArchiveStore, key)
+		// ToDo: Delete files from the server
 		fmt.Fprintf(w, "{\"status\": \"deleted\"}")
 		return
 	}
@@ -119,27 +120,15 @@ func AddArchiveHandler(w http.ResponseWriter, r *http.Request) {
 
 	r.ParseForm()
 	file, handler, err := r.FormFile("upload")
-	defer file.Close()
 	if err != nil {
 		// Bad Request
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "{\"error\": \"Bad Request\"}")
 		return
 	}
+	defer file.Close()
 
 	if handler != nil {
-		r.ParseMultipartForm(32 << 20)
-		// Read the save directory from Conf
-		path := Conf["saveDir"] + "/" + handler.Filename
-		f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "{\"error\": \"Internal Server Error\"}")
-			return
-		}
-		defer f.Close()
-		io.Copy(f, file)
-		// TODO: Generate a ~COOL~ key
 		key, err := uuid.NewV4()
 
 		if err != nil {
@@ -150,6 +139,20 @@ func AddArchiveHandler(w http.ResponseWriter, r *http.Request) {
 
 		keyStr := key.String()
 		expire := time.Now().Add(time.Hour * 24).Unix()
+
+		r.ParseMultipartForm(32 << 20)
+		// Read the save directory from Conf
+		path := Conf["saveDir"] + "/" + keyStr
+
+		f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "{\"error\": \"Internal Server Error\"}")
+			return
+		}
+		defer f.Close()
+
+		io.Copy(f, file)
 
 		ArchiveStore[keyStr] = Archive{
 			Key:      keyStr,
