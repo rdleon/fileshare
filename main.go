@@ -15,16 +15,21 @@ var Conf map[string]string
 
 func init() {
 	Conf = map[string]string{
-		"addr":      "127.0.0.1:8080",
+		"listen":    "*:8080",
+		"user":      "admin",
+		"password":  "",
 		"saveDir":   "/tmp",
-		"secretKey": "secretsecret",
+		"secretKey": "",
 	}
 
 	ArchiveStore = make(map[string]Archive)
 }
 
 func main() {
-	readConf()
+	err := readConf()
+	if err != nil {
+		os.Exit(1)
+	}
 
 	r := mux.NewRouter()
 	// TODO: Check Auth & filter by content-type
@@ -43,19 +48,20 @@ func main() {
 	// Serve static files
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 
-	log.Fatal(http.ListenAndServe(Conf["addr"], r))
+	log.Println("listening on", Conf["listen"])
+	log.Fatal(http.ListenAndServe(Conf["listen"], r))
 }
 
-func readConf() {
+func readConf() error {
 	var fileConf map[string]string
 
-	var conf = flag.String("conf", "/etc/fileshare.json", "The configuration file")
+	var conf = flag.String("conf", "./config.json", "The configuration file")
 	flag.Parse()
 
 	fh, err := os.Open(*conf)
 	if err != nil {
 		log.Println("Couldn't open the config file")
-		return
+		return err
 	}
 	defer fh.Close()
 
@@ -63,7 +69,7 @@ func readConf() {
 	err = dec.Decode(&fileConf)
 	if err != nil {
 		log.Println("Error reading the config file")
-		return
+		return err
 	}
 
 	for k := range Conf {
@@ -71,4 +77,6 @@ func readConf() {
 			Conf[k] = fileConf[k]
 		}
 	}
+
+	return nil
 }
