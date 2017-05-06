@@ -17,6 +17,7 @@ type User struct {
 }
 
 var MyUser = User{Name: "admin", Password: ""}
+var loggedIn = make(map[string]bool)
 
 // Validate the webtoken and return the username
 func CheckAuth(r *http.Request) (string, bool) {
@@ -43,12 +44,17 @@ func CheckAuth(r *http.Request) (string, bool) {
 	if err != nil {
 		return "", false
 	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims["sub"].(string), true
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return "", false
 	}
 
-	return "", false
+	name := claims["sub"].(string)
+	if !loggedIn[name] {
+		return "", false
+	}
+
+	return name, true
 }
 
 // Authenticates the user using name:password and generates a JWT
@@ -77,6 +83,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		response = make(map[string]interface{})
 
 		if credentials == MyUser {
+			loggedIn[MyUser.Name] = true
 			claims := jwt.StandardClaims{
 				ExpiresAt: time.Now().Add(time.Hour * 2).Unix(),
 				Issuer:    "fileshare",
@@ -105,5 +112,9 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 // Logout the user by "destroying" the auth token before it expires
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
-	// TODO: destroy JWT token, expire session
+	if username, ok := CheckAuth(r); ok {
+		delete(loggedIn, username)
+	}
+
+	fmt.Fprintf(w, "{\"loggedin\": false}")
 }

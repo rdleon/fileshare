@@ -31,7 +31,7 @@ function drawMainInput() {
 
         if (key == 13) {
             if (colon < 0) {
-                http.get('/archive/' + input.value);
+                http.get('/archives/' + input.value);
             } else {
                 creds = input.value.split(':', 2)
                 http.post('/login', {'name': creds[0], 'password': creds[1]}, onLogin);
@@ -106,6 +106,12 @@ function drawAdmin() {
         for (i in resp.archives) {
             li = makeItem(resp.archives[i])
             list.appendChild(li);
+        }
+    },
+    function (code, resp) {
+        if (code == 401) {
+            http.clearJWT();
+            drawMainInput();
         }
     });
 
