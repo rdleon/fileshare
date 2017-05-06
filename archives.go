@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -71,6 +72,16 @@ func UpdateArchiveHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Deletes a file from the server
+func deleteFile(filename string) error {
+	err := os.Remove(filename)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func DeleteArchiveHandler(w http.ResponseWriter, r *http.Request) {
 	if _, ok := CheckAuth(r); !ok {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -79,15 +90,27 @@ func DeleteArchiveHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	vars := mux.Vars(r)
-	if key, ok := vars["archiveKey"]; ok {
-		delete(ArchiveStore, key)
-		// ToDo: Delete files from the server
-		fmt.Fprintf(w, "{\"status\": \"deleted\"}")
+	key, ok := vars["archiveKey"]
+	if !ok {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "{\"error\": \"Bad Request\"}")
 		return
 	}
 
-	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprintf(w, "{\"error\": \"Not found\"}")
+	archive, ok := ArchiveStore[key]
+
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "{\"error\": \"Not found\"}")
+		return
+	}
+
+	err := deleteFile(archive.SavePath)
+	if err != nil {
+		log.Println(err)
+	}
+	delete(ArchiveStore, key)
+	fmt.Fprintf(w, "{\"status\": \"deleted\"}")
 }
 
 // Lists all the files that the server has available to download
@@ -98,13 +121,26 @@ func ListArchiveHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := map[string][]Archive{
-		"archives": make([]Archive, 0),
+	resp := map[string][]interface{}{
+		"archives": make([]interface{}, 0),
 	}
 
-	for _, archive := range ArchiveStore {
+	now := time.Now().Unix()
+	for key, archive := range ArchiveStore {
+		if archive.Expire < now {
+			err := deleteFile(archive.SavePath)
+			if err != nil {
+				log.Println(err)
+			}
+			delete(ArchiveStore, key)
+		}
 		// Do not send the server path
-		resp["archives"] = append(resp["archives"], archive)
+		item := map[string]interface{}{
+			"Name":   archive.Name,
+			"Key":    archive.Key,
+			"Expire": archive.Expire,
+		}
+		resp["archives"] = append(resp["archives"], item)
 	}
 
 	json.NewEncoder(w).Encode(resp)
@@ -146,6 +182,7 @@ func AddArchiveHandler(w http.ResponseWriter, r *http.Request) {
 
 		f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
 		if err != nil {
+			log.Printf("Error saving file")
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "{\"error\": \"Internal Server Error\"}")
 			return
