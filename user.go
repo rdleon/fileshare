@@ -16,7 +16,7 @@ type User struct {
 	Password string
 }
 
-var MyUser = User{Name: "rdleon", Password: "password"}
+var MyUser = User{Name: "admin", Password: ""}
 
 // Validate the webtoken and return the username
 func CheckAuth(r *http.Request) (string, bool) {

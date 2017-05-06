@@ -3,6 +3,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"log"
 	"net/http"
@@ -28,7 +29,7 @@ func init() {
 func main() {
 	err := readConf()
 	if err != nil {
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	r := mux.NewRouter()
@@ -60,7 +61,6 @@ func readConf() error {
 
 	fh, err := os.Open(*conf)
 	if err != nil {
-		log.Println("Couldn't open the config file")
 		return err
 	}
 	defer fh.Close()
@@ -68,7 +68,6 @@ func readConf() error {
 	dec := json.NewDecoder(fh)
 	err = dec.Decode(&fileConf)
 	if err != nil {
-		log.Println("Error reading the config file")
 		return err
 	}
 
@@ -77,6 +76,18 @@ func readConf() error {
 			Conf[k] = fileConf[k]
 		}
 	}
+
+	if user, ok := Conf["user"]; ok {
+		MyUser.Name = user
+	}
+
+	pass, ok := Conf["password"]
+
+	if !ok || len(pass) < 3 {
+		return errors.New("Password missing or too short")
+	}
+
+	MyUser.Password = pass
 
 	return nil
 }
