@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -47,8 +48,8 @@ func DownloadArchiveHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "{\"error\": \"Not found\"}")
 		return
 	}
-
-	w.Header().Set("Content-Disposition", "attachment; filename="+archive.Name)
+	filename := url.QueryEscape(archive.Name)
+	w.Header().Set("Content-Disposition", "attachment; filename="+filename)
 	http.ServeFile(w, r, archive.SavePath)
 }
 
