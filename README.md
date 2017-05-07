@@ -11,7 +11,7 @@ To use, modify the config file, set listen to "\*:80" or the
 port you want to use, add a password and a secret (a good ol'
 random string) and run:
 
-	$ fileshare [-c config.json]
+	$ fileshare [-conf config.json]
 
 You can open the web interface by going to the configured
 (in config.json) location (defaults to http://localhost:8080 .)
